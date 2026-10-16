@@ -28,7 +28,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
 
     def test_neutral_directory_installed_copy_verifies_library_and_contracts(self):
         with tempfile.TemporaryDirectory() as tmp:
-            installed = Path(tmp) / "installed-plugin"
+            installed = Path(tmp).resolve() / "installed-plugin"
             shutil.copytree(
                 ROOT,
                 installed,
@@ -55,7 +55,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
         import library_adoption
 
         with tempfile.TemporaryDirectory() as tmp:
-            copied_root = Path(tmp) / "pkg"
+            copied_root = Path(tmp).resolve() / "pkg"
             (copied_root / "contracts").mkdir(parents=True)
             (copied_root / "vendor").mkdir(parents=True)
             (copied_root / "bin").mkdir(parents=True)
@@ -120,18 +120,17 @@ class TestV2LifecycleE2E(unittest.TestCase):
         bound_agy = verdict_v2.bound_verdict(binding)
 
         valid_verdict = {
-            "schema": "triad-leg-verdict.v2",
+            "schema_version": 2,
             "review_id": review_id,
             "family": "google",
-            "leg_name": "google",
-            "route": "agy",
-            "attempt": 1,
             "content_digest": digest,
+            "leg_name": "google",
+            "attempt": 1,
+            "route": "agy",
             "verdict": "SAFE TO MERGE",
-            "ApproveForMerge": True,
-            "inspected_surfaces": ["main.py"],
+            "criteria_checked": ["All good"],
             "findings": [],
-            "strengths": ["All good"],
+            "affected_surfaces_inspected": ["main.py"],
             "open_questions": [],
         }
 
@@ -141,7 +140,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
             {
                 "event": "step_update",
                 "step_update": {
-                    "step_type": "finish",
+                    "step_type": "tool",
                     "tool_name": "finish",
                     "state": "ERROR",
                     "step_index": 0,
@@ -204,7 +203,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
             {
                 "event": "step_update",
                 "step_update": {
-                    "step_type": "finish",
+                    "step_type": "tool",
                     "tool_name": "finish",
                     "state": "ERROR",
                     "step_index": 0,
@@ -256,7 +255,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
             {
                 "event": "step_update",
                 "step_update": {
-                    "step_type": "finish",
+                    "step_type": "tool",
                     "tool_name": "finish",
                     "state": "ERROR",
                     "step_index": 0,
@@ -328,7 +327,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
             {
                 "event": "step_update",
                 "step_update": {
-                    "step_type": "finish",
+                    "step_type": "tool",
                     "tool_name": "finish",
                     "state": "ERROR",
                     "step_index": 0,
@@ -374,7 +373,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
         root = temp_base / f"triad-review-{review_id}"
 
         with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
+            tmp_path = Path(tmp).resolve()
             worktree = tmp_path / "worktree"
             worktree.mkdir()
 
@@ -493,18 +492,17 @@ class TestV2LifecycleE2E(unittest.TestCase):
                         folder = Path(alloc["folder"])
 
                         verdict_payload = {
-                            "schema": "triad-leg-verdict.v2",
+                            "schema_version": 2,
                             "review_id": binding["review_id"],
                             "family": binding["family"],
-                            "leg_name": binding["leg_name"],
-                            "route": binding["route"],
-                            "attempt": binding["attempt"],
                             "content_digest": binding["content_digest"],
+                            "leg_name": binding["leg_name"],
+                            "attempt": binding["attempt"],
+                            "route": binding["route"],
                             "verdict": "SAFE TO MERGE",
-                            "ApproveForMerge": True,
-                            "inspected_surfaces": ["main.py"],
+                            "criteria_checked": ["Clean structure and robust logic"],
                             "findings": [],
-                            "strengths": ["Clean structure and robust logic"],
+                            "affected_surfaces_inspected": ["main.py"],
                             "open_questions": [],
                         }
                         verdict_bytes = (
@@ -569,13 +567,16 @@ class TestV2LifecycleE2E(unittest.TestCase):
                         self.assertEqual(v["route"], expected_route)
                         self.assertEqual(v["content_digest"], basis["content_digest"])
                         self.assertEqual(v["verdict"], "SAFE TO MERGE")
-                        self.assertTrue(v["ApproveForMerge"])
+                        self.assertEqual(v["findings"], [])
+                        self.assertEqual(v["open_questions"], [])
 
                 finally:
                     os.environ.clear()
                     os.environ.update(saved_env)
 
             finally:
+                if root.exists():
+                    review_round.export_review_workspace(review_id, root, tmp_path / "evidence")
                 review_round.cleanup_review_workspace(review_id, root)
 
     def test_failed_attempt_retry_and_cancellation_cleanup(self):
@@ -587,7 +588,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
         root = temp_base / f"triad-review-{review_id}"
 
         with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
+            tmp_path = Path(tmp).resolve()
             worktree = tmp_path / "worktree"
             worktree.mkdir()
 
@@ -714,6 +715,8 @@ class TestV2LifecycleE2E(unittest.TestCase):
                     os.environ.update(saved_env)
 
             finally:
+                if root.exists():
+                    review_round.export_review_workspace(review_id, root, tmp_path / "evidence")
                 res = review_round.cleanup_review_workspace(review_id, root)
                 self.assertTrue(res.removed)
 

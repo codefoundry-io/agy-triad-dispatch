@@ -11,18 +11,17 @@ DIGEST = "a" * 64
 
 def _valid_verdict_dict(*, family: str, leg_name: str, route: str | None, attempt: int = 1) -> dict:
     return {
-        "schema": "triad-leg-verdict.v2",
+        "schema_version": 2,
         "review_id": "rev-20261015-01",
         "family": family,
-        "leg_name": leg_name,
-        "route": route,
-        "attempt": attempt,
         "content_digest": DIGEST,
+        "leg_name": leg_name,
+        "attempt": attempt,
+        "route": route,
         "verdict": "SAFE TO MERGE",
-        "ApproveForMerge": True,
-        "inspected_surfaces": ["bin/validate_v2.py"],
+        "criteria_checked": ["Clean boundaries"],
         "findings": [],
-        "strengths": ["Clean boundaries"],
+        "affected_surfaces_inspected": ["bin/validate_v2.py"],
         "open_questions": [],
     }
 

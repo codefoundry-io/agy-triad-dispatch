@@ -16,21 +16,20 @@ DIGEST = "b" * 64
 class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
     def test_codex_wrapper_v2_admits_native_final_and_rejects_duplicate_keys(self):
         with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
+            tmp_path = Path(tmp).resolve()
             fake_bin = tmp_path / "codex"
             verdict = {
-                "schema": "triad-leg-verdict.v2",
+                "schema_version": 2,
                 "review_id": "rev-codex-01",
                 "family": "codex",
-                "leg_name": "codex",
-                "route": None,
-                "attempt": 1,
                 "content_digest": DIGEST,
+                "leg_name": "codex",
+                "attempt": 1,
+                "route": None,
                 "verdict": "SAFE TO MERGE",
-                "ApproveForMerge": True,
-                "inspected_surfaces": ["bin/codex_wrapper.py"],
+                "criteria_checked": ["Solid"],
                 "findings": [],
-                "strengths": ["Solid"],
+                "affected_surfaces_inspected": ["bin/codex_wrapper.py"],
                 "open_questions": [],
             }
             fake_bin.write_text(
@@ -107,7 +106,7 @@ class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
         import review_adapters_v2
 
         with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
+            tmp_path = Path(tmp).resolve()
             folder = tmp_path / "folder"
             folder.mkdir()
 
