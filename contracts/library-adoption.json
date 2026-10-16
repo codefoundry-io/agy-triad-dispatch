@@ -1,16 +1,17 @@
 {
   "bundle_ids": {
     "prompt": "c332d95688b9db3dac187a0bebac6ddc0eddfdbdc5401a649697d0601455e843",
+    "receipt": "26bf981f9fe1b3798508908fe648806a33db365d308c8424a11d2ed06c96d9e8",
     "roster": "a99fb58dbd920dfed0d88d8c8b9117bd07633b76b5d2565e05f50a5b5c423ed8",
     "verdict": "455dfd8a7d586d04eedb60ee492cf421e076a77bafcccbba12de37cc12bf0340"
   },
   "name": "triad-dispatch-lib",
   "schema_version": 1,
   "sha256": {
-    "bin/triad_dispatch_lib/__init__.py": "c3f5ade7a805ebbd9fd501373cbd403d0e2a77a770a5b4a44a8b897c9890815a",
+    "bin/triad_dispatch_lib/__init__.py": "be8ef9340c3c37f116ba7632595c52d605659d826609030a3592293cbbece07b",
     "bin/triad_dispatch_lib/agreement.py": "1087c64ad4fab3d3b14dc12485c11512b8cbdc95b2868fe6c78fc51b264c69bd",
     "bin/triad_dispatch_lib/bundle_manifest.py": "5e6fc1a31d0901ea82928817a76942f0ee73360e75f6e1fd53e07cd8ba6a0446",
-    "bin/triad_dispatch_lib/contracts.py": "d81846578c004d829950665697c1221ef6c9f589f6ee1ed6fba5d5860e7c5e7e",
+    "bin/triad_dispatch_lib/contracts.py": "e9c56cd3b422087b767eb129b22e05dbb063b981f293d8868242dea3a5dff73a",
     "bin/triad_dispatch_lib/data/leg-verdict.schema.json": "d755905ac60348542fc1dbbeb37b92bc3fab0a2dc34b7a1b454c935d0be04184",
     "bin/triad_dispatch_lib/data/prompt-bundle/contracts/review-kind.schema.json": "855807a26cda96102858da345f4888ee8658ee2ecff7584aecf9cf31ba61f724",
     "bin/triad_dispatch_lib/data/prompt-bundle/prompts/common-clauses.md": "07249974fa9fa6ce9f24ae7b79074b815031358a4e5155920695ac05eddf173f",
@@ -19,19 +20,22 @@
     "bin/triad_dispatch_lib/data/prompt-bundle/prompts/leg-codex.md": "d7e0e5017f54542e2be4b95f9c3a0f4e867096d432e7bee832ea0f03d80548df",
     "bin/triad_dispatch_lib/data/prompt-bundle/prompts/leg-google.md": "e17eb874bf6ff023a5ee79bfffb4cca9970c35135d60d3354a8f9593bc0a6415",
     "bin/triad_dispatch_lib/data/prompt-bundle/source-manifest.json": "d2903bef8f2c3387b8d51ccfef37e42e95980f031fba66e120b31fd60461cd0e",
+    "bin/triad_dispatch_lib/data/receipt-bundle/contracts/receipt-fields.json": "4108a1501bc1c5077c30fe5cc9e030ae4fb90c7b09c5b1137dbfdaaeec4214c4",
+    "bin/triad_dispatch_lib/data/receipt-bundle/source-manifest.json": "1da09d64bdd0ba34edb5adc98563129b8e2516cf78dcd991796c957752648f9d",
     "bin/triad_dispatch_lib/data/roster-bundle/contracts/review-legs.schema.json": "1611655cda859a6738ec8ff52dd3d3aa08539cc8ba01741c8a72426abda37cb9",
     "bin/triad_dispatch_lib/data/roster-bundle/source-manifest.json": "a479b386e88d747610f0d873637a9b12d4fb22461663c7e770793b50dfecdc5e",
     "bin/triad_dispatch_lib/data/source-manifest.json": "fa1a460262840acf9ebe8a8ac856069b1e1055681edb88713c3829dc924e5e57",
     "bin/triad_dispatch_lib/dispatch.py": "584a55b08c1e19d14c6fe3dbfe4de9cb393e95adaf46c5c3f0aa4a2b58dd3954",
-    "bin/triad_dispatch_lib/errors.py": "2ea9686d372996ac1c4e60925afc259d3a5def4e145531aa350c1617c30201f7",
+    "bin/triad_dispatch_lib/errors.py": "66dcb87a6e4281f25f7dc371926b431ad5f90bfc40eaab72e018b4c1819cd930",
     "bin/triad_dispatch_lib/json_input.py": "cb9ae38d7143d8d1e9b47953dc63b6dc2206a27907d17669995e0da419534a3a",
     "bin/triad_dispatch_lib/output.py": "7c1fd87a8b9a1fc121c89d706fed78283d6fad3dee4655218020a734348218d2",
-    "bin/triad_dispatch_lib/prompts.py": "7c30dd7fd0bd84ce87c9d50d16a43b046a9446d40694cf4ef716f87d3d4eda2e",
-    "bin/triad_dispatch_lib/roster.py": "de2003506e83eb8a9edbb300d50870c9f4aed55d0ec65bd104839ccad9eb4980",
-    "bin/triad_dispatch_lib/verdict.py": "21e4934e13a93c520f9a5cd28f5b06f13400a5a211133696db6a6c56f4b2fd90",
+    "bin/triad_dispatch_lib/prompts.py": "dc47e3077e43387b7080bd8391318196fc7d520887e15b2c6c7100d0e1ab5ed9",
+    "bin/triad_dispatch_lib/receipt.py": "c0e3d938ad1cc333e536abd20e63c316f7eafec99ec041b841da566af78b0c0d",
+    "bin/triad_dispatch_lib/roster.py": "60a62e60eeff04cfb862305d285113a177855e354c35c9c0564c944573a53606",
+    "bin/triad_dispatch_lib/verdict.py": "3b5514ceb4e0e0ab56d5046981ebeb5270ceb2a98d096270d106c2ea3f338fac",
     "vendor/triad-dispatch-lib.LICENSE": "64d25215d58f76fd170c4688ded0fb7bae5e83e4eeb890d222f02fa798428daa"
   },
-  "source_commit": "2d1e62e7de6f33fa13a918a39579c6b5e74def00",
-  "version": "0.1.0.dev3",
-  "wheel_sha256": "df1e84b56a7238bab2a019064c850c30bde5b6b15268a81a1e74d76df0c187b8"
+  "source_commit": "087af94a7078de0ae9701fb057840b5492f51f66",
+  "version": "0.1.0.dev4",
+  "wheel_sha256": "c5bfdf10c4ce81f431ec7f77106e4d77b1556ac9c7b6b01bdb6616f988e8b2cc"
 }

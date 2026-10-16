@@ -66,7 +66,7 @@ class TestAgyPluginAndBootstrap(unittest.TestCase):
         # Check bootstrap.sh and bootstrap_repair verify library_adoption
         self.assertIn("library_adoption", bootstrap_sh)
         meta = bootstrap_repair.verify_library(ROOT)
-        self.assertEqual(meta["version"], "0.1.0.dev3")
+        self.assertEqual(meta["version"], "0.1.0.dev4")
 
     def test_references_and_docs_exist(self):
         for path in (

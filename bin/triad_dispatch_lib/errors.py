@@ -18,6 +18,9 @@ class AdmissionError(ValueError):
 
     def __init__(self, code: str):
         self.code = code
+        self.field: str | None = None
+        self.path: tuple[str | int, ...] | None = None
+        self.missing: str | None = None
         super().__init__(_MESSAGES[code])
 
 
@@ -54,12 +57,26 @@ class RosterError(ValueError):
 
     def __init__(self, code: str):
         self.code = code
+        self.path: tuple[str | int, ...] | None = None
+        self.missing: str | None = None
+        self.document: str | None = None
         super().__init__({
             "invalid_json": "Invalid roster override JSON.",
             "schema_violation": "Roster violates the canonical schema.",
             "duplicate_name": "Duplicate roster entry name.",
             "empty_selection": "Roster has no enabled entries.",
             "nesting_limit": "Roster nesting exceeds the validation limit.",
+        }[code])
+
+
+class ReceiptError(ValueError):
+    """Transport shape refusal with fixed text and a stable reason code."""
+
+    def __init__(self, code: str):
+        self.code = code
+        super().__init__({
+            "schema_violation": "Transport receipt violates the canonical schema.",
+            "nesting_limit": "Transport receipt nesting exceeds the validation limit.",
         }[code])
 
 

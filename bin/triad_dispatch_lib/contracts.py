@@ -58,3 +58,19 @@ def load_roster_contract() -> dict:
         return schema
     except (OSError, ValueError, SchemaError, RecursionError):
         raise ContractError("Unreadable or invalid packaged roster contract.") from None
+
+
+def _load_receipt_contract() -> dict:
+    """Return the unchanged transport schema from its own verified bundle."""
+    try:
+        root = files("triad_dispatch_lib").joinpath("data", "receipt-bundle")
+        name = "contracts/receipt-fields.json"
+        schema = parse_json(load_verified_bundle(root, (name,))[name])
+        if (not isinstance(schema, dict)
+                or schema.get("$schema") != Draft202012Validator.META_SCHEMA["$id"]
+                or schema.get("$id") != SCHEMA_NAMESPACE + "/" + name):
+            raise ValueError
+        Draft202012Validator.check_schema(schema)
+        return schema
+    except (OSError, ValueError, SchemaError, RecursionError):
+        raise ContractError("Unreadable or invalid packaged receipt contract.") from None

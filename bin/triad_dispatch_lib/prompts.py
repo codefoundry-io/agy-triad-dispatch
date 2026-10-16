@@ -1,6 +1,7 @@
 """Render pinned fenced clauses; leave host I/O and native execution outside."""
 
 from datetime import date
+import hashlib
 from importlib.resources import files
 import json
 import re
@@ -56,13 +57,16 @@ def parse_clauses(text: str, *, host: str | None) -> dict[str, str]:
 def render_review_clauses(*, family: str, host: str, review_date: str,
                           review_web_authorized: bool, replacements: dict,
                           review_kind: str = "pre-merge", route: str | None = None,
-                          agy_hook_active: bool = False) -> str:
+                          agy_hook_active: bool = False,
+                          with_manifest: bool = False) -> str | tuple[str, list[dict[str, str]]]:
     """Render a canonical family/host profile with one-pass caller substitution.
 
     Caller-owned replacement values are already encoded single-line strings.
     This function performs no path inspection and grants no execution authority.
     """
     _validate_profile(family, route)
+    if type(with_manifest) is not bool:
+        raise PromptError("Manifest flag must be a boolean.")
     if host not in ("A", "B"):
         raise PromptError("Unsupported prompt profile.")
     if type(agy_hook_active) is not bool or (agy_hook_active and (family, host, route) != ("google", "A", "agy")):
@@ -103,15 +107,23 @@ def render_review_clauses(*, family: str, host: str, review_date: str,
     if not order or len(order) != len(set(order)):
         raise ContractError("Invalid prompt clause order.")
     try:
-        pieces = []
+        pieces, manifest = [], []
+        web_key = "review-web-permission" if review_web_authorized else "review-no-web"
+        web_recorded = False
         for name in order:
             selected, complete, key = (common, all_common, name[7:]) if name.startswith("common:") else (leg, all_leg, name)
             if key not in complete:
                 raise KeyError
             if key in selected:
                 pieces.append(selected[key])
+                if with_manifest:
+                    manifest.append({"name": name, "sha256": hashlib.sha256(selected[key].encode("utf-8")).hexdigest()})
+                    if "<review-web-policy>" in selected[key] and not web_recorded:
+                        manifest.append({"name": "common:" + web_key,
+                            "sha256": hashlib.sha256(common[web_key].encode("utf-8")).hexdigest()})
+                        web_recorded = True
         values = replacements | {"review-kind": review_kind, "review-date": review_date,
-            "review-web-policy": common["review-web-permission" if review_web_authorized else "review-no-web"]}
+            "review-web-policy": common[web_key]}
     except KeyError:
         raise ContractError("Missing ordered prompt clause.") from None
     if family == "google":
@@ -120,7 +132,8 @@ def render_review_clauses(*, family: str, host: str, review_date: str,
     literals = CLAUDE_LITERALS if family == "claude" else set()
     if not set(re.findall(PLACEHOLDER, text)).issubset(values.keys() | literals):
         raise ContractError("Unexpected prompt placeholders.")
-    return re.sub(PLACEHOLDER, lambda match: values.get(match[1], match[0]), text)
+    text = re.sub(PLACEHOLDER, lambda match: values.get(match[1], match[0]), text)
+    return (text, manifest) if with_manifest else text
 
 
 def render_data(value: str) -> str:

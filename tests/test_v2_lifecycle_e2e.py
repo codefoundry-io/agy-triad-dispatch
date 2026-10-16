@@ -42,7 +42,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
                     "import library_adoption, validate_v2; "
                     "meta = library_adoption.verify_library(); "
                     "contracts = validate_v2.load_contracts(); "
-                    "assert meta['version'] == '0.1.0.dev3'; "
+                    "assert meta['version'] == '0.1.0.dev4'; "
                     "assert 'leg-verdict.schema.json' in contracts; "
                     "assert 'review-legs.schema.json' in contracts; "
                     "assert 'receipt-fields.json' in contracts"
@@ -70,7 +70,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
 
             # Initially valid
             meta = library_adoption.verify_library(root=copied_root)
-            self.assertEqual(meta["version"], "0.1.0.dev3")
+            self.assertEqual(meta["version"], "0.1.0.dev4")
 
             target_file = copied_root / "bin/triad_dispatch_lib/verdict.py"
             original_bytes = target_file.read_bytes()
@@ -83,7 +83,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
 
             # Restore file
             target_file.write_bytes(original_bytes)
-            self.assertEqual(library_adoption.verify_library(root=copied_root)["version"], "0.1.0.dev3")
+            self.assertEqual(library_adoption.verify_library(root=copied_root)["version"], "0.1.0.dev4")
 
             # 2. Unexpected file fails closed with unexpected diagnostics
             unexpected_file = copied_root / "bin/triad_dispatch_lib/unexpected_module.py"
@@ -94,7 +94,7 @@ class TestV2LifecycleE2E(unittest.TestCase):
 
             # Remove unexpected file
             unexpected_file.unlink()
-            self.assertEqual(library_adoption.verify_library(root=copied_root)["version"], "0.1.0.dev3")
+            self.assertEqual(library_adoption.verify_library(root=copied_root)["version"], "0.1.0.dev4")
 
             # 3. Mutated file fails closed with digest mismatch
             target_file.write_bytes(original_bytes + b"\n# mutated\n")
