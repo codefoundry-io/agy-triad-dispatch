@@ -1,5 +1,7 @@
 # Upstream Proposal: First-Class Antigravity Host Profile (`host="C"` / `host="AGY"`) in `triad-dispatch-lib`
 
+> **Historical Note (Not Filed)**: Upstream `triad-dispatch-lib 0.1.0.dev4` still supports only host profiles `"A"` and `"B"`. By owner decision, this proposal was not filed upstream; this host stays on `host="B"`.
+
 - **Target Repository**: `codefoundry-io/triad-dispatch-lib`
 - **Target Release**: `0.1.0.dev4`
 - **Originating Host Project**: `agy-triad-dispatch` (Antigravity-native TRIAD host toolkit)

@@ -79,6 +79,32 @@ class TestAgyPluginAndBootstrap(unittest.TestCase):
         ):
             self.assertTrue(path.is_file(), f"missing {path}")
 
+    def test_no_dev3_references_in_shipped_text(self):
+        targets = [
+            ROOT / "README.md",
+            ROOT / "README.ko.md",
+            ROOT / "SECURITY.md",
+            ROOT / "scripts" / "bootstrap.sh",
+            ROOT / "plugin.json",
+            ROOT / ".antigravity-plugin" / "plugin.json",
+        ]
+        targets.extend(sorted((ROOT / "skills").glob("**/SKILL.md")))
+
+        forbidden = [
+            "0.1.0.dev3",
+            "2d1e62e7de6f33fa13a918a39579c6b5e74def00",
+        ]
+
+        violations = []
+        for target in targets:
+            self.assertTrue(target.is_file(), f"missing target {target}")
+            content = target.read_text(encoding="utf-8")
+            for token in forbidden:
+                if token in content:
+                    violations.append(f"{target.relative_to(ROOT)} contains forbidden token '{token}'")
+
+        self.assertEqual(violations, [])
+
 
 if __name__ == "__main__":
     unittest.main()

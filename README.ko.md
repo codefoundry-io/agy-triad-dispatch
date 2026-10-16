@@ -1,6 +1,6 @@
 # agy-triad-dispatch
 
-**Google Antigravity (`agy`)** 호스트를 위한 교차 패밀리 Triad 디스패치 및 v2 포멀 리뷰 플러그인입니다. 고정된 `triad-dispatch-lib 0.1.0.dev3` (`2d1e62e7de6f33fa13a918a39579c6b5e74def00`) 및 원본 캐리어 `admit_output` 검증을 기반으로 동작합니다.
+**Google Antigravity (`agy`)** 호스트를 위한 교차 패밀리 Triad 디스패치 및 v2 포멀 리뷰 플러그인입니다. 고정된 `triad-dispatch-lib 0.1.0.dev4` (`087af94a7078de0ae9701fb057840b5492f51f66`) 및 원본 캐리어 `admit_output` 검증을 기반으로 동작합니다.
 
 ## 개요
 
@@ -13,9 +13,11 @@ Antigravity 리더는 3개의 독립적인 모델 패밀리를 조율합니다:
 
 ## 핵심 아키텍처
 
-### 1. 번들 공유 라이브러리 (`triad-dispatch-lib 0.1.0.dev3`)
-- `bin/triad_dispatch_lib/` 경로에 번들링되며, 커밋 `2d1e62e7de6f33fa13a918a39579c6b5e74def00` (Wheel SHA-256 `df1e84b56a7238bab2a019064c850c30bde5b6b15268a81a1e74d76df0c187b8`)에 고정됩니다.
+### 1. 번들 공유 라이브러리 (`triad-dispatch-lib 0.1.0.dev4`)
+- `bin/triad_dispatch_lib/` 경로에 번들링되며, 커밋 `087af94a7078de0ae9701fb057840b5492f51f66` (Wheel SHA-256 `c5bfdf10c4ce81f431ec7f77106e4d77b1556ac9c7b6b01bdb6616f988e8b2cc`)에 고정됩니다.
 - `bin/library_adoption.py`를 통해 `contracts/library-adoption.json`을 기준으로 오프라인 무결성을 검증합니다. 외부 환경(`PYTHONPATH` 등)에서 주입된 라이브러리는 즉시 거부(fail-closed)됩니다.
+- 릴리스: https://github.com/codefoundry-io/triad-dispatch-lib/releases/tag/v0.1.0.dev4
+- 호스트 도입 가이드: https://github.com/codefoundry-io/triad-dispatch-lib/blob/v0.1.0.dev4/docs/host-adoption.md
 
 ### 2. 관리형 래퍼 및 런처
 부트스트랩은 `~/.local/bin` (`TRIAD_BOOTSTRAP_BIN_DIR`) 경로에 5개의 관리형 명령 래퍼를 설치합니다:

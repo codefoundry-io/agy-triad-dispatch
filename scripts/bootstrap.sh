@@ -11,7 +11,7 @@ Usage: scripts/bootstrap.sh --install
        scripts/bootstrap.sh --remove
 
 --install checks local prerequisites for agy-triad-dispatch, verifies the bundled
-triad-dispatch-lib 0.1.0.dev3 adoption, and installs the 5 managed provider and
+triad-dispatch-lib 0.1.0.dev4 adoption, and installs the 5 managed provider and
 selector launchers (claude_wrapper.py, codex_wrapper.py, gemini_wrapper.py,
 antigravity_wrapper.py, review_round.py).
 
@@ -386,7 +386,7 @@ PY
 
 check_library_adoption() {
   if python3 "$REPO_ROOT/bin/bootstrap_repair.py" verify-library --root "$REPO_ROOT" >/dev/null 2>&1; then
-    ok "bundled shared library adoption verified (triad-dispatch-lib 0.1.0.dev3)"
+    ok "bundled shared library adoption verified (triad-dispatch-lib 0.1.0.dev4)"
   else
     fail "bundled shared library adoption verification failed (library_adoption.verify_library)"
   fi

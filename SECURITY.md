@@ -2,9 +2,9 @@
 
 `agy-triad-dispatch` coordinates external model families from the **Google Antigravity (`agy`)** host leader; it does not turn their output into a trusted control plane. Its durable boundaries are explicit data authorization, pinned executable paths, immutable-directory digests, mutation detection, strict result custody, and deterministic owner apply.
 
-## Bundled Shared Library (`triad-dispatch-lib 0.1.0.dev3`)
+## Bundled Shared Library (`triad-dispatch-lib 0.1.0.dev4`)
 
-Explicit v2 review and carrier admission use the pinned, generated `triad-dispatch-lib` package (version `0.1.0.dev3`, commit `2d1e62e7de6f33fa13a918a39579c6b5e74def00`, wheel SHA-256 `df1e84b56a7238bab2a019064c850c30bde5b6b15268a81a1e74d76df0c187b8`).
+Explicit v2 review and carrier admission use the pinned, generated `triad-dispatch-lib` package (version `0.1.0.dev4`, commit `087af94a7078de0ae9701fb057840b5492f51f66`, wheel SHA-256 `c5bfdf10c4ce81f431ec7f77106e4d77b1556ac9c7b6b01bdb6616f988e8b2cc`).
 - Toolkit custody includes package code, resource manifests, and the adoption record (`contracts/library-adoption.json`).
 - Verified offline via `bin/library_adoption.py`. Any ambient `PYTHONPATH` or pre-loaded module override outside `<repo>/bin/triad_dispatch_lib` is rejected fail-closed before inference.
 - The adoption hashes establish consistency with the reviewed build. Runtime imports never download dependencies.

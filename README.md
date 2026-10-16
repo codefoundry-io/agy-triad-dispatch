@@ -1,6 +1,6 @@
 # agy-triad-dispatch
 
-Cross-family Triad dispatch and formal v2 review plugin for **Google Antigravity (`agy`)**, backed by pinned `triad-dispatch-lib 0.1.0.dev3` (`2d1e62e7de6f33fa13a918a39579c6b5e74def00`) and original-carrier `admit_output` validation.
+Cross-family Triad dispatch and formal v2 review plugin for **Google Antigravity (`agy`)**, backed by pinned `triad-dispatch-lib 0.1.0.dev4` (`087af94a7078de0ae9701fb057840b5492f51f66`) and original-carrier `admit_output` validation.
 
 ## Overview
 
@@ -13,9 +13,11 @@ The Antigravity host leader coordinates three independent model families:
 
 ## Core Architecture
 
-### 1. Bundled Shared Library (`triad-dispatch-lib 0.1.0.dev3`)
-- Bundled at `bin/triad_dispatch_lib/`, pinned to commit `2d1e62e7de6f33fa13a918a39579c6b5e74def00` (Wheel SHA-256 `df1e84b56a7238bab2a019064c850c30bde5b6b15268a81a1e74d76df0c187b8`).
+### 1. Bundled Shared Library (`triad-dispatch-lib 0.1.0.dev4`)
+- Bundled at `bin/triad_dispatch_lib/`, pinned to commit `087af94a7078de0ae9701fb057840b5492f51f66` (Wheel SHA-256 `c5bfdf10c4ce81f431ec7f77106e4d77b1556ac9c7b6b01bdb6616f988e8b2cc`).
 - Verified offline against `contracts/library-adoption.json` via `bin/library_adoption.py`. Ambient library overrides are rejected fail-closed.
+- Release: https://github.com/codefoundry-io/triad-dispatch-lib/releases/tag/v0.1.0.dev4
+- Host adoption guide: https://github.com/codefoundry-io/triad-dispatch-lib/blob/v0.1.0.dev4/docs/host-adoption.md
 
 ### 2. Managed Wrappers and Launchers
 Bootstrap installs 5 managed command wrappers in `~/.local/bin` (`TRIAD_BOOTSTRAP_BIN_DIR`):
