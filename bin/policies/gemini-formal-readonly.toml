@@ -1,0 +1,35 @@
+# Codex-host formal Gemini review: non-interactive Plan Mode, local read/search only.
+# --policy replaces user policy file paths; higher-tier admin rules remain authoritative.
+# D-9: web evidence belongs to a separately authorized investigation, never REVIEW.
+
+[[rule]]
+toolName = [
+  "read_file",
+  "read_many_files",
+  "list_directory",
+  "glob",
+  "grep_search",
+  "get_internal_docs",
+]
+decision = "allow"
+priority = 999
+
+[[rule]]
+toolName = [
+  "write_file",
+  "replace",
+  "run_shell_command",
+  "enter_plan_mode",
+  "exit_plan_mode",
+  "google_web_search",
+  "web_fetch",
+]
+decision = "deny"
+priority = 999
+denyMessage = "Formal TRIAD review permits only the packaged read/search tool set."
+
+[[rule]]
+toolName = "*"
+decision = "deny"
+priority = 998
+denyMessage = "Formal TRIAD review denies every tool outside the packaged read/search set."

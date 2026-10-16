@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+_logs/
+_debug/
+.superpowers/
+.agents/skills/
+_runs/
+.triad-bin/
+.triad-config/
+.triad-codex-home/

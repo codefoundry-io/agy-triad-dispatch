@@ -1,0 +1,26 @@
+{
+  "status": "historical-reference-only",
+  "scope": "Tagged vendor model facts, not a TRIAD support gate. TRIAD requires Gemini CLI >=0.63.0 for every model and route; minimum_version fields below describe historical vendor evidence only.",
+  "source": "https://github.com/google-gemini/gemini-cli/blob/v0.60.0/packages/core/src/config/models.ts",
+  "minimum_version": "0.60.0",
+  "models": [
+    "gemini-3-pro-preview",
+    "gemini-3.1-pro-preview",
+    "gemini-3.1-pro-preview-customtools",
+    "gemini-3-flash-preview",
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    "gemini-3.5-flash",
+    "gemini-3.8-flash",
+    "gemini-3-flash",
+    "gemini-3.1-flash-lite",
+    "gemma-4-31b-it",
+    "gemma-4-26b-a4b-it"
+  ],
+  "model_overrides": {
+    "gemini-3.8-flash": {
+      "minimum_version": "0.61.0",
+      "source": "https://github.com/google-gemini/gemini-cli/blob/v0.61.0/packages/core/src/config/models.ts"
+    }
+  }
+}
