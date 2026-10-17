@@ -333,10 +333,11 @@ def _admit_v2_agy_output(
     pydantic_cls: Any,
     *,
     stdout: str,
-    stderr: str,
+    stderr: str = "",
     vendor_exit_code: int,
     c23_recovered: bool,
 ) -> dict[str, Any]:
+    del stderr
     import verdict_v2
     if c23_recovered:
         terminal_line = _find_terminal_result_line(stdout)
@@ -346,7 +347,6 @@ def _admit_v2_agy_output(
             pydantic_cls,
             carrier="native-final",
             stdout=span,
-            stderr=stderr,
             exit_code=0,
             completed=True,
         )
@@ -356,7 +356,6 @@ def _admit_v2_agy_output(
                 pydantic_cls,
                 carrier="agy-stream-json",
                 stdout=stdout,
-                stderr=stderr,
                 exit_code=vendor_exit_code,
                 completed=True,
             )
@@ -365,7 +364,6 @@ def _admit_v2_agy_output(
             pydantic_cls,
             carrier="agy-stream-json",
             stdout=terminal_line,
-            stderr=stderr,
             exit_code=vendor_exit_code,
             completed=True,
         )
@@ -488,11 +486,9 @@ def _interpret_run(
                 payload = _admit_v2_agy_output(
                     pydantic_cls,
                     stdout=run.stdout,
-                    stderr=run.stderr,
                     vendor_exit_code=run.vendor_exit_code,
                     c23_recovered=bool(denied_post_completion or resubmitted),
                 )
-                pydantic_cls.model_validate(payload)
                 run.validated = payload
                 run.final_answer = json.dumps(payload, ensure_ascii=False)
             except Exception as exc:

@@ -212,11 +212,9 @@ def _prompt(basis: dict, binding: dict, adapter: dict) -> str:
 
 
 def _invocation(binding: dict, adapter: dict, folder: Path, prompt: str) -> dict:
+    del prompt
     if adapter["transport_route"] == "native":
-        return {"tool": "collaboration.spawn_agent", "arguments": {
-            "task_name": "review_" + _hash((binding["review_id"] + ":" + binding["leg_name"]).encode())[:12] + "_" + str(binding["attempt"]),
-            "fork_turns": "none", "model": adapter["model"],
-            "reasoning_effort": adapter["effort"], "message": prompt}}
+        raise ValueError("native transport route is not supported on the Antigravity host; use CLI wrapper route")
     route = adapter["transport_route"]
     wrapper = "antigravity_wrapper.py" if route == "agy" else route + "_wrapper.py"
     argv = ["python3", str(TOOLKIT / "bin" / wrapper), "--prompt-file", str(folder / "prompt.md"),
@@ -462,42 +460,8 @@ def record_cli_attempt(basis_file: Path, name: str, *, run_log: Path,
 
 def record_native_attempt(basis_file: Path, name: str, *, host_receipt: Path,
                           result_file: Path, read_evidence: Path | None = None) -> dict:
-    item = _latest(basis_file, name)
-    if item["adapter"]["transport_route"] != "native":
-        raise ValueError("native host observations require a native allocation")
-    files = {path: _host_file(item, path) for path in (host_receipt, result_file)}
-    host = _json(files[host_receipt])
-    fields = {"review_binding", "agent_id", "terminal_status", "runtime_model", "runtime_effort"}
-    if (not isinstance(host, dict) or set(host) != fields
-            or not isinstance(host["agent_id"], str) or not host["agent_id"].strip()
-            or host["terminal_status"] not in ("completed", "failed", "cancelled")
-            or any(host[key] is not None and (not isinstance(host[key], str) or not host[key].strip())
-                   for key in ("runtime_model", "runtime_effort"))):
-        raise ValueError("invalid native terminal host observation")
-    classification, validated = "ok", None
-    if host["terminal_status"] != "completed":
-        classification = "native-" + host["terminal_status"]
-    elif any(host[key] is not None and host[key] != item["adapter"][control]
-             for key, control in (("runtime_model", "model"), ("runtime_effort", "effort"))):
-        classification = "identity-mismatch"
-    else:
-        try:
-            validated = validate_verdict(files[result_file], expected=item["binding"])
-        except (ValueError, UnicodeError):
-            classification = "schema-fail"
-    receipt = {"review_binding": host["review_binding"], "observation_source": "native-host",
-               "provider_reference": host["agent_id"], "native_host": host,
-               "exit_code": 0 if classification == "ok" else 1,
-               "vendor_exit_code": 0 if host["terminal_status"] == "completed" else -1,
-               "classification": classification, "validated": validated,
-               "runtime_identity": "observed" if host["runtime_model"] is not None else "unexposed",
-               "stdout": files[result_file].decode("utf-8", errors="replace"), "stderr": "",
-               "transport": {"schema_version": 2, "route": "native", "binary": None,
-                             "cli_version": None, "attempt": item["binding"]["attempt"],
-                             "stdin_delivery": "not-used"}}
-    reads = _reads(item, read_evidence, files)
-    return record_attempt(basis_file, name, receipt=receipt, raw_verdict=files[result_file],
-                          read_evidence=reads, host_files=files)
+    del basis_file, name, host_receipt, result_file, read_evidence
+    raise ValueError("native host observations are not supported on the Antigravity host; use record_cli_attempt")
 
 
 def record_start_failure(basis_file: Path, name: str, *, host_receipt: Path) -> dict:

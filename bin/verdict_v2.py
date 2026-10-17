@@ -92,14 +92,13 @@ def admit_carrier_output(
     *,
     carrier: str,
     stdout: str | bytes,
-    stderr: str | bytes = "",
     exit_code: int = 0,
     completed: bool = True,
 ) -> dict[str, Any]:
     """Validate original provider output through triad_dispatch_lib.output.admit_output."""
     if cls._binding is None:
         raise ValueError("admit_carrier_output requires a bound v2 LegVerdict class")
-    shared = _library()
+    _library()
     load_contracts()
     from triad_dispatch_lib.output import ProviderOutput, admit_output
     provider_output = ProviderOutput(

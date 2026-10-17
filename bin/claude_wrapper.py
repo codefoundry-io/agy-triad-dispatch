@@ -187,11 +187,9 @@ def _run_native_structured_once(
                     pydantic_cls,
                     carrier="claude-json",
                     stdout=_common.strip_markdown_fences(result.stdout),
-                    stderr=result.stderr,
                     exit_code=result.vendor_exit_code,
                     completed=True,
                 )
-                pydantic_cls.model_validate(admitted)
                 result.classification = "ok"
                 result.validated = admitted
                 result.final_answer = json.dumps(admitted, ensure_ascii=False)

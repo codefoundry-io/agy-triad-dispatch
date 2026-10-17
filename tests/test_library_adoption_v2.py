@@ -90,13 +90,16 @@ class TestLibraryAdoptionDev4(unittest.TestCase):
             module = root / "bin/triad_dispatch_lib/receipt.py"
             original = module.read_bytes()
             module.unlink()
-            with self.assertRaises(ValueError):
+            with self.assertRaisesRegex(
+                ValueError,
+                r'generated inventory mismatch: .*"missing": \["bin/triad_dispatch_lib/receipt\.py"\]',
+            ):
                 library_adoption.verify_library(root)
             module.write_bytes(original)
             library_adoption.verify_library(root)
             fields = root / "bin/triad_dispatch_lib/data/receipt-bundle/contracts/receipt-fields.json"
             fields.write_bytes(fields.read_bytes() + b" ")
-            with self.assertRaises(ValueError):
+            with self.assertRaisesRegex(ValueError, "generated hash mismatch"):
                 library_adoption.verify_library(root)
 
     def test_stale_unexpected_file_refused(self):
@@ -105,5 +108,8 @@ class TestLibraryAdoptionDev4(unittest.TestCase):
             root = _copy_adoption_root(tmp)
             library_adoption.verify_library(root)
             (root / "bin/triad_dispatch_lib/data/stale.json").write_text("{}", encoding="utf-8")
-            with self.assertRaises(ValueError):
+            with self.assertRaisesRegex(
+                ValueError,
+                r'generated inventory mismatch: .*"unexpected": \["bin/triad_dispatch_lib/data/stale\.json"\]',
+            ):
                 library_adoption.verify_library(root)

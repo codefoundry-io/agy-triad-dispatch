@@ -110,22 +110,20 @@ class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
             folder = tmp_path / "folder"
             folder.mkdir()
 
-            # 1. Native spawn-tool mode
+            # 1. Native spawn-tool mode is rejected fail-closed on the Antigravity host
             native_caps = {
                 "source": "native-spawn-tool",
                 "models": {"gpt-5.6-terra": ["xhigh", "high"]},
                 "default_model": "gpt-5.6-terra",
                 "default_effort": "xhigh",
             }
-            native_res = review_adapters_v2._codex(
-                {"model": "gpt-5.6-terra", "reasoning": "xhigh"},
-                cwd=tmp_path,
-                folder=folder,
-                native_capabilities=native_caps,
-            )
-            self.assertEqual(native_res["transport_route"], "native")
-            self.assertEqual(native_res["capability_source"], "native-spawn-tool")
-            self.assertIsNone(native_res["binary"])
+            with self.assertRaisesRegex(ValueError, "native-spawn-tool is not supported on the Antigravity host"):
+                review_adapters_v2._codex(
+                    {"model": "gpt-5.6-terra", "reasoning": "xhigh"},
+                    cwd=tmp_path,
+                    folder=folder,
+                    native_capabilities=native_caps,
+                )
 
             # 2. CLI mode when native_capabilities is None or source == 'cli'
             fake_bin = tmp_path / "fake_codex"
@@ -184,16 +182,15 @@ class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
                 "route": None,
             }
 
-            # 1. Native route
+            # 1. Native route is rejected fail-closed on the Antigravity host
             native_adapter = {
                 "family": "codex",
                 "transport_route": "native",
                 "model": "gpt-5.6-terra",
                 "effort": "xhigh",
             }
-            inv_native = review_round_v2._invocation(binding, native_adapter, folder, "hello prompt")
-            self.assertEqual(inv_native.get("tool"), "collaboration.spawn_agent")
-            self.assertEqual(inv_native["arguments"]["model"], "gpt-5.6-terra")
+            with self.assertRaisesRegex(ValueError, "native transport route is not supported on the Antigravity host"):
+                review_round_v2._invocation(binding, native_adapter, folder, "hello prompt")
 
             # 2. CLI route
             cli_adapter = {

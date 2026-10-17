@@ -33,17 +33,19 @@ class TestAgyPluginAndBootstrap(unittest.TestCase):
 
     def test_toolkit_inventory_hashes_cleanly_in_review_round_v2(self):
         sys.path.insert(0, str(ROOT / "bin"))
-        try:
-            import review_round_v2
-        except ImportError:
-            self.skipTest("review_round_v2 not yet created")
-            return
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import review_round_v2
+        import verify_distribution
+
         toolkit_hashes = review_round_v2._toolkit()
         self.assertIn("bin/codex_wrapper.py", toolkit_hashes)
         self.assertIn("bin/claude_wrapper.py", toolkit_hashes)
         self.assertIn("bin/antigravity_wrapper.py", toolkit_hashes)
         self.assertIn("bin/gemini_wrapper.py", toolkit_hashes)
         self.assertIn("contracts/library-adoption.json", toolkit_hashes)
+        self.assertEqual(set(toolkit_hashes) - set(verify_distribution.HASH_TARGETS), set())
+        for rel in verify_distribution.HASH_TARGETS:
+            self.assertTrue((ROOT / rel).is_file(), f"missing HASH_TARGET: {rel}")
 
     def test_bootstrap_managed_launchers_and_library_verification(self):
         sys.path.insert(0, str(ROOT / "bin"))

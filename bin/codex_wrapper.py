@@ -293,11 +293,9 @@ def main() -> int:
                             pydantic_cls,
                             carrier="native-final",
                             stdout=raw_last_msg,
-                            stderr=result.stderr,
                             exit_code=result.vendor_exit_code,
                             completed=True,
                         )
-                        pydantic_cls.model_validate(admitted)
                         result.classification = "ok"
                         result.exit_code = EXIT_OK
                         result.validated = admitted

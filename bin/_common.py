@@ -1563,12 +1563,9 @@ def _run_gemini_native_structured_once(
                 pydantic_cls,
                 carrier="gemini-json",
                 stdout=result.stdout,
-                stderr=result.stderr,
                 exit_code=result.vendor_exit_code,
                 completed=True,
             )
-            answer, _ = extract_gemini_answer(result.stdout, result.stderr)
-            pydantic_cls.model_validate_json(strip_markdown_fences(answer))
             result.validated = admitted
             result.final_answer = json.dumps(admitted, ensure_ascii=False)
             result.classification = "ok"

@@ -59,23 +59,6 @@ def _new(path: Path, data: dict) -> None:
     review_round._write_new(path, review_round._canonical_json_bytes(data))
 
 
-def _native(block: dict, capabilities: dict, *, web: bool = False) -> dict:
-    if (not isinstance(capabilities, dict) or capabilities.get("source") != "native-spawn-tool"
-            or not isinstance(capabilities.get("models"), dict)):
-        raise ValueError("native invocation requires current host tool capabilities")
-    if web and capabilities.get("web_available") is not True:
-        raise ValueError("native review web requires current host web availability")
-    model = block.get("model") if block.get("model") is not None else capabilities.get("default_model")
-    effort = block.get("reasoning") if block.get("reasoning") is not None else capabilities.get("default_effort")
-    levels = capabilities["models"].get(model)
-    if (not isinstance(model, str) or not isinstance(levels, list)
-            or any(not isinstance(value, str) for value in levels) or effort not in levels):
-        raise ValueError("native requested/default model and effort are not exposed as supported")
-    return {"model": model, "effort": effort, "binary": None, "cli_version": None,
-            "transport_route": "native", "capability_source": "native-spawn-tool",
-            **({"native_web_available": True} if web else {})}
-
-
 def _codex(
     block: dict,
     *,
@@ -84,8 +67,9 @@ def _codex(
     web: bool = False,
     native_capabilities: dict | None = None,
 ) -> dict:
+    del web
     if isinstance(native_capabilities, dict) and native_capabilities.get("source") == "native-spawn-tool":
-        return _native(block, native_capabilities, web=web)
+        raise ValueError("native-spawn-tool is not supported on the Antigravity host; use CLI wrapper route")
 
     binary = resolve_binary("codex")
     if binary is None:
