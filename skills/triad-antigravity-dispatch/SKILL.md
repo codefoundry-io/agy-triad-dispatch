@@ -43,7 +43,7 @@ The formal Google prompt authorizes only AGY native file-read/search tools for l
 
 ## Formal Google leg
 
-Use `triad-cross-family-review` and its `references/leg-contracts.md`. The formal wrapper arguments are:
+Use [`../triad-cross-family-review/SKILL.md`](../triad-cross-family-review/SKILL.md) and [`../triad-cross-family-review/references/convergence.md`](../triad-cross-family-review/references/convergence.md). The formal wrapper arguments are:
 
 ```bash
 python3 bin/antigravity_wrapper.py \

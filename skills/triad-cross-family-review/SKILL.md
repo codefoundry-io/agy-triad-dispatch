@@ -5,9 +5,11 @@ description: 아키텍처, 호환성, 배포, 보안, 데이터 손실 위험 �
 
 # Triad Cross-Family Review
 
-Explicit owner/project selection of **public v2** uses `bin/review_round_v2.py`
-for named rosters, producer/render/collector commands, host evidence, and same-basis
-retry. Every enabled entry participates, including informational entries; never
+Explicit owner/project selection of **public v2** uses `bin/review_round.py`
+(backed by `bin/review_round_v2.py`) for named rosters (`resolve-roster`),
+producer/render/collector commands (`v2-create`, `v2-allocate`, `v2-record-cli`,
+`v2-record-start-failure`, `v2-collect`), host evidence, and same-basis retry.
+Every enabled entry participates, including informational entries; never
 convert v2 results to legacy.
 Public v2 binds the owner's standing [review-web authorization](references/review-web.md) to every new round. Legacy retains explicit per-round authorization.
 
@@ -36,20 +38,22 @@ and rerun handling.
    cookies, environment dumps, and unrelated data.
 
 2. **Resolve toolkit.** Resolve the repository root and use only its packaged lifecycle
-   and wrapper code (`bin/*_wrapper.py`, `bin/review_round_v2.py`, `bin/library_adoption.py`).
+   and wrapper code (`bin/*_wrapper.py`, `bin/review_round.py`, `bin/review_round_v2.py`, `bin/library_adoption.py`).
    Verify `library_adoption.verify_library()` before running reviews.
 
-3. **Create the basis.** Run `review_round_v2.py prepare` with canonical source root, member-list,
-   and fresh review ID. Add `TASK.md`, `REVIEW.diff`, optional `EVIDENCE.md`, then run `manifest`.
+3. **Create the basis.** Run `python3 bin/review_round.py prepare` with canonical source root, member-list,
+   and fresh review ID. Add `TASK.md`, `REVIEW.diff`, optional `EVIDENCE.md`, then run `python3 bin/review_round.py manifest`.
+   For public v2 rounds, use `python3 bin/review_round.py resolve-roster`, `v2-create`, `v2-allocate`,
+   `v2-record-cli`, `v2-record-start-failure`, and `v2-collect` (backed by `bin/review_round_v2.py`).
 
-4. **Capture integrity.** Run `capture` against the prepared directory and record its SHA-256
+4. **Capture integrity.** Run `python3 bin/review_round.py capture` against the prepared directory and record its SHA-256
    prepared digest. Keep all mutable round artifacts outside the guarded review basis.
 
 5. **Freeze the Google route.** Select and record the Google route (`personal-google` -> `agy`,
    `gemini-enterprise` -> `agy` or `gemini`). The preflight receipt binds the review ID, route,
    executable, model, and effort into every family digest.
 
-6. **Render from code.** Render the prompts using `review_prompts_v2.py`. The renderer binds
+6. **Render from code.** Render the prompts using `review_prompts_v2.py` (or via `python3 bin/review_round.py v2-allocate`). The renderer binds
    all six v2 fields: `review_id`, `family`, `content_digest`, `leg_name`, `attempt`, `route`.
 
 7. **Start independent legs.** Start Claude, Google, and Codex concurrently or sequentially
@@ -63,7 +67,7 @@ and rerun handling.
    Validate every result with `triad_dispatch_lib.output.admit_output` using all six binding fields.
    Duplicate JSON keys inside carrier envelopes fail closed with exit 66.
 
-9. **Verify before admission.** Wait for all started legs to terminate. Run `verify` to confirm
+9. **Verify before admission.** Wait for all started legs to terminate. Run `python3 bin/review_round.py verify` to confirm
    the prepared review directory was not modified during inspection (`ROUND_INTEGRITY_OK`).
    Admit evidence only when directory integrity matches and all required families return structurally
    valid results for the same content digest.
@@ -72,7 +76,7 @@ and rerun handling.
     Apply the smallest verified correction inside the approved design, run project verification,
     and start a fresh complete round under a new review ID.
 
-11. **Clean the exact round.** Run packaged `export` to a durable location, followed by `cleanup`.
+11. **Clean the exact round.** Run packaged `python3 bin/review_round.py export` to a durable location, followed by `python3 bin/review_round.py cleanup`.
 
 ## Gate Decision
 

@@ -354,7 +354,7 @@ def _classifier_extension_path() -> Path:
     if override:
         return Path(override)
     base = os.environ.get("XDG_CONFIG_HOME") or str(Path.home() / ".config")
-    return Path(base) / "triad-codex-dispatch" / "classifier-patches.json"
+    return Path(base) / "agy-triad-dispatch" / "classifier-patches.json"
 
 
 def _load_classifier_extension() -> dict:

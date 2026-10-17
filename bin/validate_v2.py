@@ -72,6 +72,8 @@ def load_contracts() -> dict:
         raise RuntimeError("invalid bundled shared library") from error
     compatibility = {
         "leg-verdict.schema.json": "bin/triad_dispatch_lib/data/leg-verdict.schema.json",
+        "receipt-fields.json": "bin/triad_dispatch_lib/data/receipt-bundle/contracts/receipt-fields.json",
+        "review-kind.schema.json": "bin/triad_dispatch_lib/data/prompt-bundle/contracts/review-kind.schema.json",
         "review-legs.schema.json": "bin/triad_dispatch_lib/data/roster-bundle/contracts/review-legs.schema.json",
     }
     schemas = {}

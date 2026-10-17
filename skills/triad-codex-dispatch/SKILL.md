@@ -23,7 +23,7 @@ python3 bin/codex_wrapper.py \
 ```
 
 - When structured output is requested, pass `--pydantic module:Class`. The wrapper derives an OpenAI-compatible strict schema (`additionalProperties: false` and all keys listed in `required`).
-- For authorized web research, specify `--web` (or `--search`); the wrapper configures `-c web_search="enabled"` and appends the shared investigation clauses. When web is not authorized, `-c web_search="disabled"` is enforced.
+- For authorized web research, specify `--web` (or `--search`); the wrapper configures `-c web_search=live` and appends the shared investigation clauses. When web is not authorized, `-c web_search="disabled"` is enforced.
 - Long prompts must be stored in a UTF-8 file and passed via `--prompt-file` to keep sensitive content off command argv.
 
 ## Cross-family review leg

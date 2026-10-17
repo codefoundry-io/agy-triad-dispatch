@@ -22,11 +22,15 @@ FROZEN_REPAIR_ANALYZER_SHA256 = (
 )
 REG_BEGIN = "# >>> agy-triad-dispatch managed repair analyzer registration >>>"
 REG_END = "# <<< agy-triad-dispatch managed repair analyzer registration <<<"
+LEGACY_REG_BEGIN = "# >>> triad-codex-dispatch managed repair analyzer registration >>>"
+LEGACY_REG_END = "# <<< triad-codex-dispatch managed repair analyzer registration <<<"
 LAUNCHER = "triad-apply-repair"
 LAUNCHER_MARKER = "# agy-triad-dispatch managed repair apply launcher"
 REG_DESCRIPTION = "Read-only triad repair analyzer for untrusted vendor run logs."
 PROFILE_MARKER = b"# agy-triad-dispatch managed runtime profile"
+LEGACY_PROFILE_MARKER = b"# triad-codex-dispatch managed runtime profile"
 RULES_MARKER = b"# agy-triad-dispatch managed command rules"
+LEGACY_RULES_MARKER = b"# triad-codex-dispatch managed command rules"
 PUBLIC_LAUNCHER_MARKER = b"# agy-triad-dispatch managed launcher"
 LEGACY_PUBLIC_LAUNCHER_MARKER = b"# triad-codex-dispatch managed launcher"
 PUBLIC_RUNTIME_MARKER = b"# agy-triad-dispatch managed runtime command"
@@ -45,6 +49,9 @@ LEGACY_CONFIG_FRAGMENT_END = (
 )
 CONFIG_FRAGMENT_INSERTED_SEPARATOR = (
     b"\n# agy-triad-dispatch managed inserted separator\n"
+)
+LEGACY_CONFIG_FRAGMENT_INSERTED_SEPARATOR = (
+    b"\n# triad-codex-dispatch managed inserted separator\n"
 )
 SHELL_ENTRY_BEGIN = b"# >>> agy-triad-dispatch agy-triad >>>"
 SHELL_ENTRY_END = b"# <<< agy-triad-dispatch agy-triad <<<"
@@ -345,15 +352,20 @@ def expected_registration(analyzer: Path) -> dict[str, str]:
     return {"description": REG_DESCRIPTION, "config_file": str(analyzer)}
 
 
-def registration_block(analyzer: Path, original_existed: bool) -> str:
+def registration_block(
+    analyzer: Path,
+    original_existed: bool,
+    begin: str = REG_BEGIN,
+    end: str = REG_END,
+) -> str:
     existed = "true" if original_existed else "false"
     return (
-        f"{REG_BEGIN}\n"
+        f"{begin}\n"
         f"# original config existed = {existed}\n"
         f"[agents.{NAME}]\n"
         f"description = {json.dumps(REG_DESCRIPTION)}\n"
         f"config_file = {json.dumps(str(analyzer), ensure_ascii=False)}\n"
-        f"{REG_END}\n"
+        f"{end}\n"
     )
 
 
@@ -363,8 +375,8 @@ def reserved_registration_markers(text: str, path: Path, parsed: dict) -> list[s
     markers = {
         REG_BEGIN,
         REG_END,
-        "# >>> triad-codex-dispatch managed repair analyzer registration >>>",
-        "# <<< triad-codex-dispatch managed repair analyzer registration <<<",
+        LEGACY_REG_BEGIN,
+        LEGACY_REG_END,
     }
     for index, line in enumerate(lines):
         marker = line.rstrip("\r\n")
@@ -387,33 +399,34 @@ def split_registration(
     actual = agents.get(NAME) if isinstance(agents, dict) else None
     expected = expected_registration(analyzer)
     candidates: list[tuple[str, str, bool]] = []
-    for original_existed in (False, True):
-        block = registration_block(analyzer, original_existed)
-        separator = "\n" if original_existed else ""
-        needle = separator + block
-        start = 0
-        while True:
-            start = text.find(needle, start)
-            if start < 0:
-                break
-            before = text[:start]
-            after = text[start + len(needle) :]
-            if actual == expected:
-                preserved = before + after
-                try:
-                    base_agents = parsed_config(preserved, path).get("agents", {})
-                except Refusal:
-                    base_agents = None
-                if (
-                    isinstance(base_agents, dict)
-                    and NAME not in base_agents
-                    and reserved in ([REG_BEGIN, REG_END], [
-                        "# >>> triad-codex-dispatch managed repair analyzer registration >>>",
-                        "# <<< triad-codex-dispatch managed repair analyzer registration <<<",
-                    ])
-                ):
-                    candidates.append((before, after, original_existed))
-            start += len(needle)
+    for begin, end in ((REG_BEGIN, REG_END), (LEGACY_REG_BEGIN, LEGACY_REG_END)):
+        for original_existed in (False, True):
+            block = registration_block(analyzer, original_existed, begin=begin, end=end)
+            separator = "\n" if original_existed else ""
+            needle = separator + block
+            start = 0
+            while True:
+                start = text.find(needle, start)
+                if start < 0:
+                    break
+                before = text[:start]
+                after = text[start + len(needle) :]
+                if actual == expected:
+                    preserved = before + after
+                    try:
+                        base_agents = parsed_config(preserved, path).get("agents", {})
+                    except Refusal:
+                        base_agents = None
+                    if (
+                        isinstance(base_agents, dict)
+                        and NAME not in base_agents
+                        and reserved in (
+                            [REG_BEGIN, REG_END],
+                            [LEGACY_REG_BEGIN, LEGACY_REG_END],
+                        )
+                    ):
+                        candidates.append((before, after, original_existed))
+                start += len(needle)
     if len(candidates) > 1:
         raise Refusal(f"malformed managed repair analyzer registration in {path}")
     if candidates:
@@ -1525,8 +1538,13 @@ def _legacy_profile_data_is_owned(data: bytes) -> bool:
         'approval_policy = "untrusted"',
     }:
         return False
-    expected_prefix = [
+    if lines[0] not in {
         PROFILE_MARKER.decode("ascii"),
+        LEGACY_PROFILE_MARKER.decode("ascii"),
+    }:
+        return False
+    expected_prefix = [
+        lines[0],
         "# Generated by scripts/bootstrap.sh --install.",
         "# Re-run with TRIAD_BOOTSTRAP_INSTALL_CODEX_PROFILE=1 to refresh.",
         "# Explicit external-CLI consent profile: triad dispatch may send relevant",
@@ -1626,16 +1644,19 @@ def _legacy_rules_data_is_owned(data: bytes) -> bool:
     if not text.endswith("\n"):
         return False
     sections = text[:-1].split("\n\n")
-    header = "\n".join(
-        (
-            RULES_MARKER.decode("ascii"),
-            "# Generated by scripts/bootstrap.sh --install.",
-            "# Re-run with TRIAD_BOOTSTRAP_INSTALL_CODEX_RULES=1 to refresh.",
-            "# These rules prompt on wrapper-specific command prefixes for approval review.",
-            "# They do not allow broad shell entrypoints such as bash -lc or zsh -lc.",
+    valid_headers = {
+        "\n".join(
+            (
+                marker.decode("ascii"),
+                "# Generated by scripts/bootstrap.sh --install.",
+                "# Re-run with TRIAD_BOOTSTRAP_INSTALL_CODEX_RULES=1 to refresh.",
+                "# These rules prompt on wrapper-specific command prefixes for approval review.",
+                "# They do not allow broad shell entrypoints such as bash -lc or zsh -lc.",
+            )
         )
-    )
-    if len(sections) != 4 or sections[0] != header:
+        for marker in (RULES_MARKER, LEGACY_RULES_MARKER)
+    }
+    if len(sections) != 4 or sections[0] not in valid_headers:
         return False
     wrappers = (
         ("claude_wrapper.py", "Claude wrapper"),
@@ -1791,12 +1812,16 @@ def _managed_artifact_data_is_owned(data: bytes, kind: str) -> bool:
     raise Refusal(f"unknown managed artifact kind: {kind}")
 
 
-def current_config_fragment(newline: bytes) -> bytes:
+def current_config_fragment(
+    newline: bytes,
+    begin: bytes = CONFIG_FRAGMENT_BEGIN,
+    end: bytes = CONFIG_FRAGMENT_END,
+) -> bytes:
     return (
-        CONFIG_FRAGMENT_BEGIN
+        begin
         + newline
         + CURRENT_CONFIG_FRAGMENT_TEXT.replace(b"\n", newline)
-        + CONFIG_FRAGMENT_END
+        + end
         + newline
     )
 
@@ -1839,7 +1864,14 @@ def remove_config_fragment(path: Path, *, preserve_empty: bool = False) -> str:
     ):
         return "not-managed"
 
-    current_blocks = [current_config_fragment(nl) for nl in (b"\n", b"\r\n")]
+    current_blocks = [
+        current_config_fragment(nl, begin=begin, end=end)
+        for begin, end in (
+            (CONFIG_FRAGMENT_BEGIN, CONFIG_FRAGMENT_END),
+            (LEGACY_CONFIG_FRAGMENT_BEGIN, LEGACY_CONFIG_FRAGMENT_END),
+        )
+        for nl in (b"\n", b"\r\n")
+    ]
     legacy_blocks = [legacy_config_fragment(nl) for nl in (b"\n", b"\r\n")]
     current_policy = tomllib.loads(CURRENT_CONFIG_FRAGMENT_TEXT.decode("utf-8"))[
         "shell_environment_policy"
@@ -1860,13 +1892,14 @@ def remove_config_fragment(path: Path, *, preserve_empty: bool = False) -> str:
         return "unrecognized-managed"
 
     managed_start = existing.find(managed)
-    separator_start = managed_start - len(CONFIG_FRAGMENT_INSERTED_SEPARATOR)
-    if (
-        separator_start >= 0
-        and existing[separator_start:managed_start]
-        == CONFIG_FRAGMENT_INSERTED_SEPARATOR
+    for sep in (
+        CONFIG_FRAGMENT_INSERTED_SEPARATOR,
+        LEGACY_CONFIG_FRAGMENT_INSERTED_SEPARATOR,
     ):
-        managed = CONFIG_FRAGMENT_INSERTED_SEPARATOR + managed
+        separator_start = managed_start - len(sep)
+        if separator_start >= 0 and existing[separator_start:managed_start] == sep:
+            managed = sep + managed
+            break
     remainder = existing.replace(managed, b"", 1)
     if not remainder:
         if preserve_empty:

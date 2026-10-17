@@ -142,6 +142,7 @@ def main() -> int:
         return EXIT_ARG_ERROR
     args.prompt = _prompt_text
 
+    raw_cwd = args.cwd
     try:
         args.cwd = validate_wrapper_cwd(args.cwd, process_cwd=process_cwd)
     except Exception as exc:
@@ -150,6 +151,15 @@ def main() -> int:
 
     if not args.prompt.strip():
         log("empty prompt")
+        return EXIT_ARG_ERROR
+    if args.timeout <= 0:
+        log("--timeout must be a positive integer")
+        return EXIT_ARG_ERROR
+    if args.model is not None and not args.model.strip():
+        log("--model must not be empty")
+        return EXIT_ARG_ERROR
+    if args.sandbox == "workspace-write" and not raw_cwd:
+        log("--sandbox workspace-write requires explicit --cwd")
         return EXIT_ARG_ERROR
 
     pydantic_cls = None
@@ -305,10 +315,14 @@ def main() -> int:
                 )
 
             result.review_binding = dict(pydantic_cls._binding)
+            stdin_delivery = (result.transport or {}).get(
+                "stdin_delivery",
+                "not-started" if result._stdin_delivery_failed else "complete",
+            )
             result.transport = {
                 "schema_version": 2,
                 "route": "codex",
-                "stdin_delivery": "complete",
+                "stdin_delivery": stdin_delivery,
                 "binary": codex_bin,
                 "cli_version": None,
                 "attempt": args.expected_attempt if args.expected_attempt is not None else 1,
@@ -437,10 +451,14 @@ def main() -> int:
             time.sleep(backoff)
             backoff *= 2
 
+        stdin_delivery = (result.transport or {}).get(
+            "stdin_delivery",
+            "not-started" if result._stdin_delivery_failed else "complete",
+        )
         result.transport = {
             "schema_version": 2,
             "route": "codex",
-            "stdin_delivery": "complete",
+            "stdin_delivery": stdin_delivery,
             "binary": codex_bin,
             "cli_version": None,
             "attempt": 1,

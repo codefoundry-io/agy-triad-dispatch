@@ -6,7 +6,7 @@
 - **Target Release**: `0.1.0.dev4`
 - **Originating Host Project**: `agy-triad-dispatch` (Antigravity-native TRIAD host toolkit)
 - **Vendored Reference Release**: `0.1.0.dev3` (commit `2d1e62e7de6f33fa13a918a39579c6b5e74def00`)
-- **Document Status**: Ready to File
+- **Document Status**: Historical (Not Filed)
 - **Date**: 2026-10-15
 
 ---

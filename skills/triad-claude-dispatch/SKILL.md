@@ -28,8 +28,8 @@ before provider resolution.
 
 ## Cross-family review leg
 
-Use `triad-cross-family-review` and read its
-`references/leg-contracts.md`. The formal Claude route is:
+Use [`../triad-cross-family-review/SKILL.md`](../triad-cross-family-review/SKILL.md) and read
+[`../triad-cross-family-review/references/convergence.md`](../triad-cross-family-review/references/convergence.md). The formal Claude route is:
 
 ```bash
 python3 bin/claude_wrapper.py \

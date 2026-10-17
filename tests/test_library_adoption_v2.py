@@ -47,7 +47,7 @@ class TestLibraryAdoptionV2(unittest.TestCase):
     def test_roster_resolution_merges_agents_override_and_preserves_defaults(self):
         import review_roster
         with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp)
+            project = Path(tmp).resolve()
             roster = review_roster.resolve_roster(project)
             self.assertEqual(roster["enabled"], ["claude", "codex", "google"])
             self.assertEqual(roster["families"], ["claude", "codex", "google"])

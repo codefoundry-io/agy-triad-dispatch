@@ -72,12 +72,12 @@ def _stored_failure_classification(cli: str, record: dict) -> str:
         # Reuse the real route: its failed-exit classifier deliberately omits stdout.
         from antigravity_wrapper import _interpret_run
         return _interpret_run(run, None).classification
-    if cli not in ("claude", "gemini"):
+    if cli not in ("claude", "codex", "gemini"):
         raise ValueError("this host has no replayable wrapper for the selected CLI")
     if raw:
         return _common.classify(cli, run.stderr, run.stdout, run.exit_code,
                                 vendor_exit_code=raw)
-    if record["classification"] != "extraction-error":
+    if record["classification"] != "extraction-error" or cli == "codex":
         raise ValueError("zero-exit unknown run has no reproducible extraction failure")
     extract = (_common.extract_claude_answer if cli == "claude"
                else _common.extract_gemini_answer)

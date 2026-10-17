@@ -171,7 +171,7 @@ class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
         import review_round_v2
 
         with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
+            tmp_path = Path(tmp).resolve()
             folder = tmp_path / "attempt-1"
             folder.mkdir()
 
@@ -238,6 +238,39 @@ class TestCodexWrapperAndAdaptersV2(unittest.TestCase):
         sig_prepare = inspect.signature(review_adapters_v2.prepare_adapters)
         self.assertIn("native_capabilities", sig_prepare.parameters)
         self.assertIsNone(sig_prepare.parameters["native_capabilities"].default)
+
+    def test_codex_wrapper_rejects_invalid_timeout_model_and_missing_workspace_write_cwd(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp).resolve()
+            wrapper = str(ROOT / "bin" / "codex_wrapper.py")
+            env = {**os.environ, "TRIAD_DISPATCH_LOG_DIR": str(tmp_path / "logs")}
+
+            proc_timeout = subprocess.run(
+                [sys.executable, wrapper, "--prompt", "hi", "--cwd", str(tmp_path), "--timeout", "0"],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            self.assertEqual(proc_timeout.returncode, 3, proc_timeout.stderr)
+            self.assertIn("--timeout must be a positive integer", proc_timeout.stderr)
+
+            proc_model = subprocess.run(
+                [sys.executable, wrapper, "--prompt", "hi", "--cwd", str(tmp_path), "--model", "   "],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            self.assertEqual(proc_model.returncode, 3, proc_model.stderr)
+            self.assertIn("--model must not be empty", proc_model.stderr)
+
+            proc_sandbox = subprocess.run(
+                [sys.executable, wrapper, "--prompt", "hi", "--sandbox", "workspace-write"],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            self.assertEqual(proc_sandbox.returncode, 3, proc_sandbox.stderr)
+            self.assertIn("--sandbox workspace-write requires explicit --cwd", proc_sandbox.stderr)
 
 
 if __name__ == "__main__":
