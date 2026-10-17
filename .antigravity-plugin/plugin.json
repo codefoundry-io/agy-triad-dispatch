@@ -1,6 +1,6 @@
 {
   "name": "agy-triad-dispatch",
+  "displayName": "AGY Triad Dispatch",
   "version": "0.1.0",
-  "description": "Cross-family Triad dispatch and formal v2 review plugin for Google Antigravity (agy)",
-  "skills": "./skills/"
+  "description": "Cross-family Triad dispatch and formal v2 review plugin for Google Antigravity (agy)"
 }

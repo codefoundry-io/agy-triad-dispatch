@@ -12,14 +12,14 @@ class TestAgyPluginAndBootstrap(unittest.TestCase):
         plugin_json = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(plugin_json["name"], "agy-triad-dispatch")
         self.assertEqual(plugin_json["version"], "0.1.0")
-        self.assertEqual(plugin_json["skills"], "./skills/")
+        self.assertNotIn("skills", plugin_json)
 
         antigravity_plugin_json = json.loads(
             (ROOT / ".antigravity-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(antigravity_plugin_json["name"], "agy-triad-dispatch")
         self.assertEqual(antigravity_plugin_json["version"], "0.1.0")
-        self.assertEqual(antigravity_plugin_json["skills"], "./skills/")
+        self.assertNotIn("skills", antigravity_plugin_json)
 
         for skill in (
             "triad-claude-dispatch",
