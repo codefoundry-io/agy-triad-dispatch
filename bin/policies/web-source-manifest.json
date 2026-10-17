@@ -1,0 +1,9 @@
+{
+  "source_repository": "https://github.com/codefoundry-io/triad-dispatch-spec",
+  "source_commit": "7f527ef1777336b93ca626744aedcd0c7d90aff9",
+  "status": "candidate",
+  "source_path": "contracts/gemini-readonly-web-b.toml",
+  "sha256": {
+    "gemini-formal-web.toml": "361b653b7f431f12542bbda7da7ee4af320ca70cd6ac0ba249e6c1b52259480b"
+  }
+}

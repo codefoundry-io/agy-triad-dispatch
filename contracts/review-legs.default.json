@@ -1,0 +1,22 @@
+{
+  "schema": "triad-review-legs.v2",
+  "legs": [
+    {
+      "name": "claude", "vendor": "claude", "enabled": true,
+      "acceptance": "required", "timeout_s": 1200,
+      "claude": {"agent": null, "model": "opus", "effort": "xhigh"}
+    },
+    {
+      "name": "codex", "vendor": "codex", "enabled": true,
+      "acceptance": "required", "timeout_s": 900,
+      "codex": {"model": "gpt-5.6-terra", "reasoning": "xhigh"}
+    },
+    {
+      "name": "google", "vendor": "google", "enabled": true,
+      "acceptance": "participating", "timeout_s": 600,
+      "google": {"route": null},
+      "agy": {"model": "gemini-3.1-pro-high", "effort": "high"},
+      "gemini": {"model": "gemini-3.1-pro-preview", "effort": null}
+    }
+  ]
+}

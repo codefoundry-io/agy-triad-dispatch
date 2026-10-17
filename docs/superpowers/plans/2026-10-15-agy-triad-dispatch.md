@@ -1,5 +1,7 @@
 # agy-triad-dispatch Implementation Plan
 
+> **Amendment Note (2026-10-17)**: The library pin in this plan (`0.1.0.dev3`) is superseded by `0.1.0.dev4` via the dev4 adoption amendment. Task 2 and Task 3 sample verdict fixtures in this document are non-canonical; tests use the canonical v2 shape.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build and verify `codefoundry-io/agy-triad-dispatch`, the Google Antigravity (`agy`) host distribution of TRIAD cross-family dispatch and review, backed by pinned `triad-dispatch-lib 0.1.0.dev3` (`2d1e62e7de6f33fa13a918a39579c6b5e74def00`) and full original-carrier `admit_output` enforcement across `claude`, `codex`, `agy`, and `gemini`.
